@@ -8,13 +8,13 @@
   "homepage": "",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/tacheraSasi/jwt-expiry.git"
   },
   "bugs": {
-    "url": ""
+    "url": "https://github.com/tacheraSasi/jwt-expiry.git/issues"
   },
   "license": "MIT",
-  "author": "<Your Name> <email@example.com>",
+  "author": "Tachera Sasi <tacherasasi@gmail.com>",
   "scripts": {
     "build": "tsup",
     "clean": "rm -rf dist",

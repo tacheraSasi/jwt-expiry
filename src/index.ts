@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 
-type JwtPayload = {
+export type JwtPayload = {
   exp: number; // expiration time in seconds
   [key: string]: any;
 };
