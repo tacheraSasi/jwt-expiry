@@ -1,7 +1,7 @@
 {
-  "name": "npm-package-starter-template",
-  "description": "A minimal, configurable TypeScript npm package starter template with build and test setup.",
-  "version": "0.0.0",
+  "name": "jwt-expiry",
+  "description": "A lightweight utility to check if a JWT token has expired.",
+  "version": "1.0.0",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -24,13 +24,17 @@
     "typecheck": "tsc --noEmit"
   },
   "keywords": [
-    "npm-package",
-    "starter",
-    "template",
-    "typescript",
-    "javascript",
-    "library"
+    "jwt",
+    "jwt-decode",
+    "token",
+    "expiry",
+    "expired",
+    "authentication",
+    "typescript"
   ],
+  "dependencies": {
+    "jwt-decode": "^4.0.0"
+  },
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "jest": "^29.7.0",

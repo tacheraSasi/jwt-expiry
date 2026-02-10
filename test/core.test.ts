@@ -1,30 +1,50 @@
-import pkg, { greet, sum } from "../src/index";
+import isJwtExpired, { isJwtExpired as namedExport } from "../src/index";
 
-describe("minimal library", () => {
-  describe("greet", () => {
-    it("greets the world by default", () => {
-      expect(greet()).toBe("Hello, world!");
-    });
+// Helper to create a JWT with a specific exp claim
+function createToken(exp: number): string {
+  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const payload = btoa(JSON.stringify({ exp }));
+  const signature = "test-signature";
+  return `${header}.${payload}.${signature}`;
+}
 
-    it("greets a provided name", () => {
-      expect(greet("Alice")).toBe("Hello, Alice!");
-    });
+describe("isJwtExpired", () => {
+  it("returns true for an expired token", () => {
+    const pastExp = Math.floor(Date.now() / 1000) - 3600; // 1 hour ago
+    const token = createToken(pastExp);
+    expect(isJwtExpired(token)).toBe(true);
   });
 
-  describe("sum", () => {
-    it("returns 0 with no args", () => {
-      expect(sum()).toBe(0);
-    });
-
-    it("sums numbers", () => {
-      expect(sum(1, 2, 3)).toBe(6);
-      expect(sum(-1, 1)).toBe(0);
-    });
+  it("returns false for a valid (non-expired) token", () => {
+    const futureExp = Math.floor(Date.now() / 1000) + 3600; // 1 hour from now
+    const token = createToken(futureExp);
+    expect(isJwtExpired(token)).toBe(false);
   });
 
-  it("default export exposes greet and sum", () => {
-    expect(typeof pkg.greet).toBe("function");
-    expect(typeof pkg.sum).toBe("function");
-    expect(pkg.greet()).toBe("Hello, world!");
+  it("returns true when token expires within skew window", () => {
+    const nearExp = Math.floor(Date.now() / 1000) + 15; // 15 seconds from now
+    const token = createToken(nearExp);
+    expect(isJwtExpired(token, 30)).toBe(true); // default skew is 30s
+  });
+
+  it("returns false when token expires outside skew window", () => {
+    const nearExp = Math.floor(Date.now() / 1000) + 60; // 60 seconds from now
+    const token = createToken(nearExp);
+    expect(isJwtExpired(token, 30)).toBe(false);
+  });
+
+  it("returns true for an invalid token", () => {
+    expect(isJwtExpired("invalid-token")).toBe(true);
+  });
+
+  it("returns true for a token without exp claim", () => {
+    const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+    const payload = btoa(JSON.stringify({ sub: "user123" })); // no exp
+    const token = `${header}.${payload}.signature`;
+    expect(isJwtExpired(token)).toBe(true);
+  });
+
+  it("default export equals named export", () => {
+    expect(isJwtExpired).toBe(namedExport);
   });
 });
