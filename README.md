@@ -1,131 +1,69 @@
-# OTPX
+# jwt-expiry
 
-A lightweight, flexible OTP (One-Time Password) generator for Node.js and TypeScript.
-
-Supports multiple charsets (numeric, alphabetic, alphanumeric, hex, or custom), case options, and exclusion of ambiguous characters like `O0Il`.
-
----
-
-## Features
-
-- Generate OTPs with customizable length
-- Built-in charsets: `numeric`, `alphabetic`, `alphanumeric`, `hex`
-- Provide your own custom charset
-- Exclude visually similar characters (`O`, `0`, `I`, `l`)
-- Case handling: upper, lower, or mixed
-- Secure random generation using Node.js `crypto`
-
----
+A lightweight utility to check if a JWT token has expired.
 
 ## Installation
 
 ```bash
-npm install otpx
-# or
-
+npm install jwt-expiry
 ```
-
----
 
 ## Usage
 
-### Basic Example
+```ts
+import { isJwtExpired } from "jwt-expiry";
+
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+
+if (isJwtExpired(token)) {
+  console.log("Token has expired");
+} else {
+  console.log("Token is still valid");
+}
+```
+
+### With Custom Skew
+
+By default, the function considers a token expired 30 seconds before its actual expiration time (clock skew protection). You can customize this:
 
 ```ts
-import OTPX from "otpx";
+// Consider expired 60 seconds before actual expiration
+isJwtExpired(token, 60);
 
-// Generate a 6-digit numeric OTP
-const otp = OTPX.numeric();
-console.log(otp); // e.g. "583920"
+// No skew - only expired if past actual exp time
+isJwtExpired(token, 0);
 ```
 
----
+## API
 
-### Using Different Charsets
+### `isJwtExpired(token: string, skewSeconds?: number): boolean`
 
-`````ts
-import OTPX from "otpx";
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `token` | `string` | - | JWT token string to check |
+| `skewSeconds` | `number` | `30` | Seconds before actual expiration to consider the token expired |
 
-// Alphabetic OTP (mixed case)
-console.log(OTPX.alphabetic(8)); // e.g. "aZkPqTrB"
+**Returns:** `true` if the token is expired or invalid, `false` if still valid.
 
-// Alphanumeric OTP with options
-console.log(OTPX.alphanumeric(10, { excludeSimilar: true }));
-// e.g. "9kPz3Hd2Gq"
+### Behavior
 
-// Hexadecimal OTP
-````markdown
-# npm-package-starter-template
+- Returns `true` if the token is malformed or cannot be decoded
+- Returns `true` if the token has no `exp` claim
+- Returns `true` if the token expires within the skew window
+- Returns `false` if the token is valid and not expired
 
-A minimal, reusable TypeScript npm package starter template. This repository demonstrates a small library layout with build, test, and type-checking setup so you can quickly scaffold a new package.
-
-## What's included
-- TypeScript source in `src/`
-- Build with `tsup` (CJS + ESM + types)
-- Tests with `jest` + `ts-jest`
-- `tsconfig.json` configured for library builds
-- `LICENSE` (MIT) and example `README.md`
-
-## Quickstart
-
-1. Clone this repo and replace package metadata in `package.json` (name, author, repository, homepage, description).
-2. Update the package source in `src/` and tests in `test/`.
-3. Install dependencies and develop.
-
-```bash
-npm install
-npm run build      # produce dist/ bundles
-npm run test       # run tests
-npm run typecheck  # run TypeScript type check
-`````
-
-When publishing, update `version` and run `npm publish` (or use CI to publish).
-
-## Development
-
-- Run tests in watch mode:
-
-```bash
-npm run test:watch
-```
-
-- Clean output and rebuild:
-
-```bash
-npm run clean
-npm run build
-```
-
-## Usage Example
-
-Replace `your-package-name` with the name you set in `package.json`.
+## Types
 
 ```ts
-import MyPackage from "your-package-name";
+import { JwtPayload } from "jwt-expiry";
 
-// use exports from src/index.ts
-console.log(typeof MyPackage);
+// JwtPayload type
+type JwtPayload = {
+  exp: number;
+  [key: string]: any;
+};
 ```
-
-## Publishing
-
-1. Ensure `package.json` fields are correct (`name`, `version`, `repository`, `license`, `author`).
-2. Build (`npm run build`) and verify `dist/` contains expected files.
-3. Publish to npm:
-
-```bash
-npm publish --access public
-```
-
-## Customize
-
-- Add CI (GitHub Actions) to run `npm test` and `npm run build` on PRs.
-- Add linting (ESLint) and formatting (Prettier) if desired.
 
 ## License
 
 MIT
-
-```
-export class OtpService {
-```
