@@ -4,13 +4,17 @@
     "noImplicitAny": true,
     "esModuleInterop": true,
     "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
     "target": "ES2022",
+    "lib": ["ES2022"],
     "module": "CommonJS",
+    "moduleResolution": "Node",
     "declaration": true,
     "isolatedModules": true,
     "noEmit": false,
     "outDir": "dist"
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": ["src", "test"],
+  "exclude": ["node_modules", "dist"]
 }
